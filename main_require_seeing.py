@@ -129,7 +129,7 @@ def print_board(board):
 
 # Simulate the remaining game
 
-current_board = [1,2,2,0,2,2,2,0,1]
+current_board = [0, 0, 1, 0, 1, 1, 2, 0, 2]
 
 
 

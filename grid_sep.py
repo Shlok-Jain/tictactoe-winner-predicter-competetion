@@ -3,7 +3,7 @@ import numpy as np
 from keras.models import load_model
 model = load_model('xo_detection.h5')
 
-im = cv2.imread("icg-freshers-data-science-competition/Dataset/Test/0.png")
+im = cv2.imread("icg-freshers-data-science-competition/Dataset/Test/9.png")
 im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
 
 # cv2.line(im, (0, 297), (im.shape[1], 297), (127,255,0), 1)
@@ -37,14 +37,17 @@ tiles.append(im[302:428, 388:513].copy())
 pred=[]
 for i in tiles:
     i = cv2.resize(i, (28, 28), interpolation=cv2.INTER_AREA)  # Resize and preserve aspect ratio
-    cv2.imshow("image",i)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-    # i = i / 255.0
-    # i = i.reshape((1, 28, 28))
-    # predictions = model.predict(i)
-    # predicted_label = int(np.argmax(predictions))
-    # pred.append(predicted_label)
+    i = i.reshape((1, 28, 28))
+    noise=0
+    for k in range(28):
+        for l in range(28):
+            noise+=abs((i[0][k][l]-30))
+    if noise<1000:
+        pred.append(2)
+        continue
+    predictions = model.predict(i/255.0)
+    predicted_label = int(np.argmax(predictions))
+    pred.append(predicted_label)
 
 
 print(pred)

@@ -95,9 +95,9 @@ for i in range(0, 47):
         elif row['POS_'+str(j+1)] == 1:
             train_images = np.concatenate((train_images, tiles[j][np.newaxis, :, :]))
             train_labels = np.append(train_labels, 0)
-        else:
-            train_images = np.concatenate((train_images, tiles[j][np.newaxis, :, :]))
-            train_labels = np.append(train_labels, -1)
+        # else:
+        #     train_images = np.concatenate((train_images, tiles[j][np.newaxis, :, :]))
+        #     train_labels = np.append(train_labels, -1)
 
 
 # Flip images
@@ -109,13 +109,23 @@ for i, img in enumerate(train_images_copy):
         flipped_img = cv2.flip(img, 0)
         train_images = np.concatenate((train_images, flipped_img[np.newaxis, :, :]))
         train_labels = np.append(train_labels, train_labels_copy[i])
+        flipped_img = cv2.flip(img, 1)
+        train_images = np.concatenate((train_images, flipped_img[np.newaxis, :, :]))
+        train_labels = np.append(train_labels, train_labels_copy[i])
+    elif train_labels[i] == 0:
+        flipped_img = cv2.flip(img, 0)
+        train_images = np.concatenate((train_images, flipped_img[np.newaxis, :, :]))
+        train_labels = np.append(train_labels, train_labels_copy[i])
+        flipped_img = cv2.flip(img, 1)
+        train_images = np.concatenate((train_images, flipped_img[np.newaxis, :, :]))
+        train_labels = np.append(train_labels, train_labels_copy[i])
 
 
 print(train_images.shape,train_labels.shape)
 
+train_images = train_images / 255.0
 
-
-train_labels = to_categorical(train_labels, 3)
+train_labels = to_categorical(train_labels, 2)
 
 # 1 for x, 0 for o, -1 for blank
 model = models.Sequential()
@@ -123,12 +133,12 @@ model.add(layers.Flatten(input_shape=(28, 28)))
 model.add(layers.Dense(128, activation='relu'))
 model.add(layers.Dropout(0.2))
 model.add(layers.Dense(64, activation='relu'))
-model.add(layers.Dense(3, activation='softmax'))
+model.add(layers.Dense(2, activation='softmax'))
 model.compile(optimizer='adam',
               loss='categorical_crossentropy',
               metrics=['accuracy'])
 
-model.fit(train_images, train_labels, epochs=17)
+model.fit(train_images, train_labels, epochs=20)
 
 #export model
 model.save('xo_detection.h5')

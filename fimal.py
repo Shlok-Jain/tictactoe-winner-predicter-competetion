@@ -1,8 +1,8 @@
 import pandas as pd
 import numpy as np
-from keras.models import load_model
 import cv2
 import os
+from keras.models import load_model
 model = load_model('xo_detection.h5')
 
 df = pd.read_csv('./Submission.csv')
@@ -141,14 +141,14 @@ def tell_winner(board):
     # print_board(board)
     while not is_winner(board, 0) and not is_winner(board, 1) and not is_board_full(board):
         player = turn % 2  # Alternates between 0 and 1
-        if player == 0:
-            print("\nX's turn (Optimal Move):")
-        else:
-            print("\nO's turn (Optimal Move):")
+        # if player == 0:
+        #     print("\nX's turn (Optimal Move):")
+        # else:
+        #     print("\nO's turn (Optimal Move):")
         move = -1
         if player==0 : move = find_best_move_x(board)
         else : move = find_best_move_o(board)
-        print(f"Optimal Move: {move + 1}")
+        # print(f"Optimal Move: {move + 1}")
 
         board[move] = player
         # print_board(board)
@@ -163,7 +163,6 @@ def tell_winner(board):
     else:
         return 2
 
-j=0
 for i in range(4520):
     print(str(i)+"iteration")
     image_path = "icg-freshers-data-science-competition/Dataset/Test/" + str(i) + ".png"
@@ -192,24 +191,26 @@ for i in range(4520):
                 for l in range(28):
                     noise+=abs((j[0][k][l]-30))
             
-            j = j / 255.0
+            # j = j / 255.0
             if noise<1000:
                 print(noise)
                 pred.append(2)
                 continue
-            predictions = model.predict(j)
+            predictions = model.predict(j/255.0)
+            # print(predictions)
             predicted_label = int(np.argmax(predictions))
             pred.append(predicted_label)
-        for j in range(len(pred)):
-            if pred[j]==0:
-                pred[j]=1
-            elif pred[j]==1:
-                pred[j]=0
-                pred_copy = pred.copy()
+        # print(pred)
+        for z in range(len(pred)):
+            if pred[z]==0:
+                pred[z]=1
+            elif pred[z]==1:
+                pred[z]=0
+        pred_copy = pred.copy()
         winner = tell_winner(pred_copy)
         row_values = [i] + pred + [winner]
 
-        print(row_values)
+        # print(row_values)
         # print(df.columns)
         if len(row_values) == len(df.columns):
             df.loc[len(df.index)] = row_values
